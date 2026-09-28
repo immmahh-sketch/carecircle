@@ -74,9 +74,14 @@ def main(src, dst):
     st = open(st_path, encoding="utf-8").read()
     if "embedTrueTypeFonts" not in st:
         flag = "<w:embedTrueTypeFonts/>"
-        if "<w:zoom" in st:
-            st = re.sub(r'(<w:zoom[^>]*/>)', r'\1' + flag, st, 1)
-        else:
+        # schema order: ... zoom, removePersonalInformation, removeDateAndTime, doNotDisplayPageBoundaries,
+        # displayBackgroundShape, printPostScriptOverText, printFractionalCharacterWidth, printFormsData, embedTrueTypeFonts ...
+        placed = False
+        for tag in ["printFormsData", "printFractionalCharacterWidth", "printPostScriptOverText", "displayBackgroundShape", "doNotDisplayPageBoundaries", "removeDateAndTime", "removePersonalInformation", "zoom"]:
+            m = re.search(r'<w:%s\b[^>]*/>' % tag, st)
+            if m:
+                st = st[:m.end()] + flag + st[m.end():]; placed = True; break
+        if not placed:
             st = re.sub(r'(<w:settings[^>]*>)', r'\1' + flag, st, 1)
         open(st_path, "w", encoding="utf-8").write(st)
     if os.path.exists(dst): os.remove(dst)

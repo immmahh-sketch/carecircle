@@ -24,26 +24,30 @@ CSS = """
 .lato{font-family:'Lato'}
 """
 
-def blobs(cols):
-    # soft radial 'bokeh' blobs for painterly depth
-    spec=[(20,25,60,cols[0]),(78,70,70,cols[1]),(60,20,45,cols[2]),(30,80,50,cols[3])]
+def blobs(cols, seed=0):
+    # soft radial 'bokeh' blobs for painterly depth; positions vary with seed
+    base=[(20,25,60),(78,70,70),(60,20,45),(30,80,50),(85,22,55),(15,70,65),(50,85,60),(70,40,50)]
+    pick=[base[(seed+i*3)%len(base)] for i in range(4)]
+    spec=[(x,y,sz,c) for (x,y,sz),c in zip(pick,cols)]
     return "".join(f'<div style="position:absolute;left:{x}%;top:{y}%;width:{s}vmin;height:{s}vmin;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,{c} 0%,transparent 70%);opacity:.85"></div>' for x,y,s,c in spec)
 
 def plate(name, num, title, spec, g1, g2, b, dark=True, W=1600, H=1000):
     fg = CREAM if dark else INK
-    sub = "rgba(243,238,228,.78)" if dark else "rgba(20,20,20,.7)"
+    sub = "rgba(243,238,228,.85)" if dark else "rgba(20,20,20,.72)"
+    acc = BRASS if dark else OX
+    seed = num
     html=f"""<html><head><style>{CSS}</style></head><body style="width:{W}px;height:{H}px;overflow:hidden;position:relative;background:linear-gradient(160deg,{g1} 0%,{g2} 100%)">
-{blobs(b)}
+{blobs(b, seed)}
 <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 9px)"></div>
-<div style="position:absolute;inset:28px;border:1.5px solid {BRASS};opacity:.9"></div>
-<div style="position:absolute;inset:38px;border:.5px solid {BRASS};opacity:.5"></div>
+<div style="position:absolute;inset:28px;border:1.5px solid {acc};opacity:.9"></div>
+<div style="position:absolute;inset:38px;border:.5px solid {acc};opacity:.5"></div>
 <div style="position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 120px">
-  {horseshoe(BRASS,84)}
-  <div class="cinzel" style="margin-top:26px;font-size:20px;color:{BRASS};text-shadow:0 1px 2px rgba(0,0,0,.25)">Plate {num:02d}</div>
-  <div class="corm" style="margin-top:14px;font-size:78px;line-height:1.02;font-weight:500;color:{fg};font-style:italic">{title}</div>
-  <div class="lato" style="margin-top:26px;font-size:22px;line-height:1.5;max-width:900px;color:{sub};font-weight:300">{spec}</div>
+  {horseshoe(acc,84)}
+  <div class="cinzel" style="margin-top:26px;font-size:22px;color:{acc}">Plate {num:02d}</div>
+  <div class="corm" style="margin-top:14px;font-size:80px;line-height:1.02;font-weight:500;color:{fg};font-style:italic">{title}</div>
+  <div class="lato" style="margin-top:26px;font-size:27px;line-height:1.45;max-width:1000px;color:{sub};font-weight:400">{spec}</div>
 </div>
-<div class="cinzel" style="position:absolute;bottom:52px;left:0;right:0;text-align:center;font-size:15px;color:{BRASS};letter-spacing:.4em">Photograph to be placed &nbsp;·&nbsp; Red Row Estate image library</div>
+<div class="cinzel" style="position:absolute;bottom:52px;left:0;right:0;text-align:center;font-size:17px;color:{acc};letter-spacing:.4em">Photograph to be placed &nbsp;·&nbsp; Red Row Estate image library</div>
 </body></html>"""
     return render(name, html, W, H)
 
@@ -81,7 +85,8 @@ def cover(W=1654,H=2339):
     html=f"""<html><head><style>{CSS}</style></head><body style="width:{W}px;height:{H}px;overflow:hidden;position:relative;background:{GREEN}">
 <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#22483A 0%,{GREEN} 55%,#0E241C 100%)"></div>
 <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 10px)"></div>
-<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);opacity:.05">{horseshoe(CREAM,1500)}</div>
+<div style="position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:1000px;height:1300px;border-radius:500px 500px 0 0;background:linear-gradient(180deg,#2B2F4A 0%,#5B4A7A 35%,#C98A3C 75%,#E0A050 100%);opacity:.22"></div>
+<div style="position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:1000px;height:1300px;border-radius:500px 500px 0 0;border:1.5px solid {BRASS};opacity:.35"></div>
 <div style="position:absolute;inset:64px;border:2px solid {BRASS}"></div>
 <div style="position:absolute;inset:78px;border:.75px solid {BRASS};opacity:.6"></div>
 <div style="position:absolute;top:150px;left:0;right:0;text-align:center">
@@ -90,8 +95,8 @@ def cover(W=1654,H=2339):
 </div>
 <div style="position:absolute;top:47%;left:0;right:0;transform:translateY(-50%);text-align:center;padding:0 150px">
   <div style="display:flex;justify-content:center">{horseshoe(BRASS,150)}</div>
-  <div class="cinzel" style="margin-top:44px;font-size:34px;color:{BRASS};letter-spacing:.42em">Red Row Estate</div>
-  <div class="corm" style="margin-top:34px;font-size:150px;line-height:.95;color:{CREAM};font-weight:500">The Black Horse<br/>Beamish</div>
+  <div class="cinzel" style="margin-top:44px;font-size:30px;color:{BRASS};letter-spacing:.42em">Home of the Black Horse Beamish</div>
+  <div class="corm" style="margin-top:34px;font-size:170px;line-height:.95;color:{CREAM};font-weight:500">Red Row<br/>Estate</div>
   <div class="corm" style="margin-top:44px;font-size:46px;line-height:1.25;color:rgba(243,238,228,.85);font-style:italic;font-weight:400">Three centuries of Beamish valley life,<br/>one family, thirty-seven acres, and the open road.</div>
 </div>
 <div style="position:absolute;bottom:150px;left:0;right:0;text-align:center;padding:0 160px">
@@ -109,7 +114,7 @@ def backcover(W=1654,H=2339):
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 200px">
   {horseshoe(BRASS,170)}
   <div class="cinzel" style="margin-top:50px;font-size:30px;color:{BRASS};letter-spacing:.45em">Red Row Estate</div>
-  <div class="corm" style="margin-top:30px;font-size:60px;color:{CREAM};font-style:italic;font-weight:400;line-height:1.2">Come and see it for yourself.<br/>The kettle, and the fire, are always on.</div>
+  <div class="corm" style="margin-top:30px;font-size:60px;color:{CREAM};font-style:italic;font-weight:400;line-height:1.2">Come and see it for yourself.<br/>The kettle and the fire are always on.</div>
   <div style="width:120px;height:1px;background:{BRASS};margin:60px auto"></div>
   <div class="lato" style="font-size:26px;line-height:1.9;color:rgba(243,238,228,.9);font-weight:300">Red Row, Beamish, County Durham DH9 0RW<br/>01207 232569 &nbsp;·&nbsp; stay@blackhorsebeamish.co.uk<br/>blackhorsebeamish.co.uk &nbsp;·&nbsp; aston.co.uk &nbsp;·&nbsp; carbarn.co.uk</div>
   <div class="cinzel" style="margin-top:70px;font-size:17px;color:rgba(243,238,228,.5);letter-spacing:.4em">@blackhorsebeamish · Instagram · Facebook · TikTok</div>
@@ -139,22 +144,26 @@ def knight_test():
     return render("knight", html, 600, 600, jpg=False)
 
 PLATES=[
- ("p02_blackhorse",2,"The Black Horse at dusk","Exterior of the pub in its landscape, lights glowing in the windows, the row of stone cottages behind. Blue hour, landscape format.","#2B2F4A","#C98A3C",["#3B4270","#E0A050","#5B4A7A","#8A5A2E"]),
- ("p03_bar",3,"Firelight and flagstones","Interior of the bar: open fire, flagstone floor, eclectic furniture and the matchbox collection. Shot low and warm, late afternoon.","#5A2E16","#E0A050",["#8A4A20","#F0B860","#6B3A1E","#C07A30"]),
- ("p04_archive",4,"Red Row in the archive","The best historic photograph of the Black Horse or Red Row cottages, ideally paired with a matching modern view from the same spot.","#6E5840","#E4D2B8",["#8C7256","#F2E4CC","#5E4A34","#C9B08E"]),
- ("p05_rooms",5,"An Old Red Row bedroom","One of the twelve oak-fitted rooms: handmade bed dressed, copper roll-top tub in shot. Bright, uncluttered, natural light.","#4A2E1E","#B5714A",["#6B4630","#D48A5E","#3E2618","#A0623A"]),
- ("p06_retreat",6,"The Retreat terrace","Red Row Retreat: private terrace looking over the Beamish Burn valley, hot tub steaming, glasses on the table. Early evening.","#4F7A64","#DCE7DF",["#6B9A82","#F0F6F1","#3E6B55","#B8D2C2"]),
- ("p07_huckleberry",7,"Huckleberry Cottage","Exterior of the cottage in the conservation valley, plus one atmospheric interior. Show the privacy and the green setting.","#3F5A3A","#C9D3B0",["#5A7A50","#E4EBD0","#2E4A2C","#9EB48A"]),
- ("p08_wedding",8,"A Red Row wedding","Couple on the estate with countryside behind; a second frame inside the Orchard Marquee dressed for a wedding breakfast.","#7A2E2B","#F0D6C8",["#9E4642","#FBE6DA","#5E2220","#D9A090"]),
- ("p09_marquee",9,"The Orchard Marquee in summer","Wide view of the marquee and grounds full of people: a festival-style celebration or show day. Show scale and atmosphere.","#6B9A3E","#F5E9B8",["#86B450","#FFF4CC","#4E7A2C","#C9D88A"]),
- ("p10_aston",10,"Aston Workshop","A DB5 or DB6 on the lift, craftsman at work, or the showroom line-up. Racing green, polished chrome, real workshop grit.","#0F2E22","#2E6B4F",["#1E4A36","#C8CCD0","#0A2018","#4A8A66"]),
- ("p11_carbarn",11,"Car Barn on meet day","Drivers' Club morning: Caterhams, classics and supercars filling the yard, coffee in hand. Wide, energetic, lots of people.","#1E1E1E","#5C5C5C",["#3A3A3A","#B0282A","#141414","#8A8A8A"]),
- ("p12_motorhome",12,"Stopover under big skies","A motorhome parked up with the valley behind and the pub within walking distance. Golden evening light, dog in shot if possible.","#5E93B8","#E9F1F5",["#7FB3D5","#FFFFFF","#3E6F92","#BFD8E8"]),
- ("p13_lavender",13,"Lavender at Red Row","Rows of lavender in full bloom with the valley beyond; a close frame of bees on the flowers. Late June to July.","#5E4C9C","#C3B4E6",["#7A68B8","#E6DDF6","#4A3A84","#A896D6"]),
- ("p14_coffee",14,"Red Row Estate Coffee","Green beans, the roaster at work, a cup on the bar. Warm, close, tactile.","#2E1A10","#A5643C",["#4A2C1C","#D08A58","#1E1008","#7A4A2E"]),
- ("p15_family",15,"The Fountain family","Bob and Fraser Fountain at the Black Horse or on the estate, relaxed and natural. One portrait, one candid.","#6E5A48","#E8DCCB",["#8C7660","#F6EEE2","#5A4636","#C9B6A0"]),
+ ("p01_estate",1,"The Beamish valley from Red Row","Hero aerial or elevated view: the estate, the lavender field, the woodland and the Black Horse in its landscape. Drone at golden hour, landscape format.","#E8B88A","#3E6B45",["#F6C89A","#7E9C7E","#F9E3C6","#4F7550"],False),
+ ("p02_blackhorse",2,"The Black Horse at dusk","Exterior of the pub in its landscape, lights glowing in the windows, the row of stone cottages behind. Blue hour, landscape format.","#2B2F4A","#C98A3C",["#3B4270","#E0A050","#5B4A7A","#8A5A2E"],True),
+ ("p03_bar",3,"Firelight and flagstones","Interior of the bar: open fire, flagstone floor, eclectic furniture. A second, close frame of the matchbox collection. Shot low and warm, late afternoon.","#5A2E16","#E0A050",["#8A4A20","#F0B860","#6B3A1E","#C07A30"],True),
+ ("p04_food",4,"Sunday lunch at the pass","The Sunday roast being plated, or afternoon tea on the stand by the fire. Overhead and close; steam, gravy, real crockery.","#4A2A1A","#D9A05A",["#7A4A2A","#F2C27A","#3E2214","#B8803E"],True),
+ ("p05_archive",5,"Red Row in the archive","The best historic photograph of the Black Horse or Red Row cottages, paired with a matching modern view from the same spot. Also: the 1740 lease from Durham University Special Collections.","#7C6448","#E4D2B8",["#8C7256","#F2E4CC","#5E4A34","#C9B08E"],False),
+ ("p06_rooms",6,"An Old Red Row bedroom","One of the twelve oak-fitted rooms: handmade bed dressed, copper roll-top tub in shot. Bright, uncluttered, natural light.","#4A2E1E","#B5714A",["#6B4630","#D48A5E","#3E2618","#A0623A"],True),
+ ("p07_retreat",7,"The Retreat terrace","Red Row Retreat: private terrace looking over the Beamish Burn valley, hot tub steaming, glasses on the table. Early evening.","#4F7A64","#DCE7DF",["#6B9A82","#F0F6F1","#3E6B55","#B8D2C2"],False),
+ ("p08_huckleberry",8,"Huckleberry Cottage","Exterior of the cottage in the conservation valley, plus one atmospheric interior. Show the privacy and the green setting.","#3F5A3A","#C9D3B0",["#5A7A50","#E4EBD0","#2E4A2C","#9EB48A"],False),
+ ("p09_wedding",9,"A Red Row wedding","The couple walking the lavender rows, and a second frame inside the Orchard Marquee dressed for a wedding breakfast of 349.","#7A2E2B","#F0D6C8",["#9E4642","#FBE6DA","#5E2220","#D9A090"],False),
+ ("p10_ridley",10,"The George Ridley Suite","The suite dressed for a ceremony: stone walls, the fire lit, chairs in rows, the couple at the front. Intimate and warm.","#3B2A22","#C9A27A",["#5E4536","#E6C79C","#2A1C16","#A67C52"],True),
+ ("p11_field",11,"Show day on the big field","Elevated or drone view of the field filled with 450 classic and exotic cars, the marquee and crowds. Show scale.","#6B9A3E","#F5E9B8",["#86B450","#FFF4CC","#4E7A2C","#C9D88A"],False),
+ ("p12_aston",12,"Aston Workshop","Two frames: a DB5 on the lift with a craftsman at work, and the eighty-car showroom line-up. Racing green, polished chrome, workshop grit.","#0F2E22","#2E6B4F",["#1E4A36","#C8CCD0","#0A2018","#4A8A66"],True),
+ ("p13_carbarn",13,"Car Barn on meet day","Drivers' Club morning: Caterhams, classics and supercars filling the yard, coffee in hand. Wide, energetic, lots of people.","#1E1E1E","#5C5C5C",["#3A3A3A","#B0282A","#141414","#8A8A8A"],True),
+ ("p14_hill",14,"The Hill","The Aston Martin timeline lined up across the estate on The Hill, pre-war to present, owners and families among the cars.","#1B3A2E","#8FB39A",["#2E5A46","#C9DCCB","#14302A","#5E8A72"],True),
+ ("p15_motorhome",15,"Stopover under big skies","A motorhome parked up with the valley behind and the pub within walking distance. Golden evening light, dog in shot if possible.","#5E93B8","#E9F1F5",["#7FB3D5","#FFFFFF","#3E6F92","#BFD8E8"],False),
+ ("p16_lavender",16,"Lavender at Red Row","Rows of lavender in full bloom with the valley beyond; a close frame of bees on the flowers. Late June to July.","#5E4C9C","#C3B4E6",["#7A68B8","#E6DDF6","#4A3A84","#A896D6"],False),
+ ("p17_coffee",17,"Red Row Estate Coffee","The roaster at work if it exists by press time; otherwise a Red Row Estate Coffee cup on the bar with the fire behind.","#2E1A10","#A5643C",["#4A2C1C","#D08A58","#1E1008","#7A4A2E"],True),
+ ("p18_family",18,"The Fountain family","Bob beside a DB5 in the former sheep shed where Aston Workshop began; Bob and Fraser together at the bar. One portrait, one candid.","#6E5A48","#E8DCCB",["#8C7660","#F6EEE2","#5A4636","#C9B6A0"],False),
 ]
 
 if __name__=="__main__":
-    print(cover()); print(backcover()); print(estate_plate()); print(emblem())
+    print(cover()); print(backcover()); print(emblem())
     for p in PLATES: print(plate(*p))
