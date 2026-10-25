@@ -14,6 +14,8 @@ npm test
 On start it prints an **admin key** (the web app asks for it once) and a **hook key** (goes in Flic/phone URLs; it can't edit your config).
 Open the app on your phone and "Add to Home Screen".
 
+**Running it on a Raspberry Pi permanently, with a public address: see [deploy/README.md](deploy/README.md).**
+
 ## What you can do
 
 | Need | How |

@@ -259,7 +259,8 @@ export function createServer(app) {
     const parts = url.pathname.split('/').filter(Boolean);
     const json = (code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj ?? null)); };
     try {
-      if (parts[0] === 'api') {
+      if (parts[0] === 'healthz') json(200, { ok: true, devices: app.registry.devices.size });
+      else if (parts[0] === 'api') {
         const key = req.headers['x-api-key'] || url.searchParams.get('key') || '';
         if (!same(key, s().settings.adminKey)) throw new HttpError(401, 'unauthorised');
         const out = await api(req, res, url, parts.slice(1));

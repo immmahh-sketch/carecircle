@@ -72,6 +72,14 @@ test('geo webhook via person token fires zone events; bad rule rejected; secrets
   await t.close();
 });
 
+test('healthz is public and reveals nothing sensitive', async () => {
+  const t = await boot();
+  const r = await fetch(`${t.base}/healthz`);
+  assert.equal(r.status, 200);
+  assert.deepEqual(Object.keys(await r.json()).sort(), ['devices', 'ok']);
+  await t.close();
+});
+
 test('static files served, traversal blocked', async () => {
   const t = await boot();
   assert.equal((await fetch(`${t.base}/%2e%2e/package.json`)).status, 404);
