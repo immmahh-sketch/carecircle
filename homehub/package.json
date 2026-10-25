@@ -1,0 +1,13 @@
+{
+  "name": "homehub",
+  "version": "0.1.0",
+  "description": "Self-hosted smart home hub: SmartLife/Tuya, Meross, Wiser, Flic buttons, geofencing and power-aware automations",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/server.js",
+    "demo": "HOMEHUB_DEMO=1 node src/server.js",
+    "test": "node --test \"test/*.test.js\""
+  }
+}
